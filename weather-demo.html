@@ -1,0 +1,63 @@
+<html>
+<head>
+  <title>Weather Demo!</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script>
+    function geocode (loc, callback_function_geocode) {
+      var mapsUrl = "http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=" + encodeURIComponent(loc);
+
+      // get google geocode
+      $.getJSON( mapsUrl, function( data ) {
+        var location = data.results[0].geometry.location;
+        var lat = location.lat;
+        var lng = location.lng;
+
+        callback_function_geocode ({lat: lat, lng: lng})
+      })
+
+    }
+
+    function getWeather (lat, lng, callback_function_weather) {
+      var weatherUrl = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lng + "&units=imperial";
+
+      // get weather
+      $.getJSON( weatherUrl, function( data ) {
+
+        callback_function_weather(data.weather[0].description, data.main.temp)
+      })
+
+    }
+
+    // start with location, end with weather
+    function doAllTheThings (location) {
+      geocode(location, function (geocode) {
+        getWeather(geocode.lat, geocode.lng, function(description, temp) {
+          // display on screen
+          $("#data").html(description + "<br>" + temp)
+          console.log(description)
+          console.log(temp)
+        })
+      })
+    }
+    //getWeather("39.95","-75.16")
+    //doAllTheThings("Towne Building", null)
+
+
+  
+
+    $(document).ready(function() {
+      $("#submit").click(function(){
+        var location = $("#loc")[0].value;
+        doAllTheThings(location)
+      })
+    })
+  </script>
+</head>
+<body>
+  Enter your location
+  <input type='text' id="loc"></body>
+  <button type="button" id="submit">Click Me!</button> 
+  <br>
+  <div id ='data'></div>
+</body>
+</html>
